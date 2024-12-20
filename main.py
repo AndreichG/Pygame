@@ -20,6 +20,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+        player.move()
         all_sprites.draw(screen)
         clock.tick(fps)
         pygame.display.flip()
