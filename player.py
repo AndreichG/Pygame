@@ -100,8 +100,3 @@ class Player(pygame.sprite.Sprite):
         self.screen_size = (self.screen.get_width(), self.screen.get_height())
         self.grid.center[0] = self.rect.centerx - self.g[0]
         self.grid.center[1] = self.rect.centery - self.g[1]
-
-
-
-
-
