@@ -1,6 +1,8 @@
+import sys
 import pygame
 from player import Player
 from grid import Grid
+from button import Button
 
 
 pygame.init()
@@ -10,18 +12,35 @@ clock = pygame.time.Clock()
 fps = 60
 
 
-def main():
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
+def menu():
+    button = Button(screen, (255, 0, 0), game, 640, 360, 250, 80, text="Play")
+    screen.fill((255, 255, 255))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.VIDEORESIZE:
+                button.sc_resize()
+                screen.fill((255, 255, 255))
+        button.update()
+        pygame.display.flip()
+        clock.tick(fps)
+
+
+def game():
     all_sprites = pygame.sprite.Group()
     grid = Grid(screen, (128, 128), 64)
     player = Player(screen, grid, all_sprites)
-
-
-    running = True
-    while running:
+    while True:
         screen.fill((255, 255, 255))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                terminate()
             if event.type == pygame.VIDEORESIZE:
                 player.sc_resize()
         #grid.render()
@@ -30,14 +49,14 @@ def main():
         #pygame.draw.circle(screen, (255, 0, 0), grid.center, 5)
         #Отладка для игрока и сетки
 
+        #button.update()
         player.move()
         player.check()
         all_sprites.draw(screen)
         pygame.draw.circle(screen, (0, 0, 0), player.rect.center, 5)
         clock.tick(fps)
         pygame.display.flip()
-    pygame.quit()
 
 
 if __name__ == "__main__":
-    main()
+    menu()
