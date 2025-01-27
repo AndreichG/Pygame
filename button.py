@@ -1,38 +1,62 @@
+import sys
 import pygame
+from player import Player
+from grid import Grid
+from button import Button
 
 
-class Button:
-    def __init__(self, screen, color, func, x, y, w, h, text='', font=None):
-        self.screen = screen
-        self.screen_size = (screen.get_width(), screen.get_height())
-        self.color = color
-        self.center = [x, y]
-        self.dimensions = [w, h]
-        self.func = func
-        self.text = text
-        self.font = pygame.font.Font(font, 50)
+pygame.init()
+screen = pygame.display.set_mode((1280, 720), pygame.RESIZABLE)
+screen.fill((255, 255, 255))
+clock = pygame.time.Clock()
+fps = 60
 
-    def render(self):
-        pygame.draw.rect(self.screen, self.color, (self.center[0] - self.dimensions[0] / 2, 
-                                                   self.center[1] - self.dimensions[1] / 2,
-                                                   self.dimensions[0],
-                                                   self.dimensions[1]))
-        text = self.font.render(self.text, True, (100, 255, 100))
-        text_x = self.center[0] - text.get_width() // 2
-        text_y = self.center[1] - text.get_height() // 2
-        screen.blit(text, (text_x, text_y))
 
-    def update(self):
-        mouse = pygame.mouse
-        pos = mouse.get_pos()
-        if (mouse.get_pressed()[0] and 
-                self.center[0] - self.dimensions[0] / 2 < pos[0] < self.center[0] + self.dimensions[0] / 2 and 
-                self.center[1] - self.dimensions[1] / 2 < pos[1] < self.center[1] + self.dimensions[1] / 2):
-            self.func()
+def terminate():
+    pygame.quit()
+    sys.exit()
 
-    def sc_resize(self):
-        x = self.center[0] / self.screen_size[0]
-        y = self.center[1] / self.screen_size[1]
-        self.center[0] = self.screen.get_width() * x
-        self.center[1] = self.screen.get_height() * y
-        self.screen_size = (self.screen.get_width(), self.screen.get_height())
+
+def menu():
+    button = Button(screen, (255, 0, 0), game, 640, 360, 250, 80, text="Play")
+    screen.fill((255, 255, 255))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.VIDEORESIZE:
+                button.sc_resize()
+                screen.fill((255, 255, 255))
+        button.update()
+        pygame.display.flip()
+        clock.tick(fps)
+
+
+def game():
+    all_sprites = pygame.sprite.Group()
+    grid = Grid(screen, (128, 128), 64)
+    player = Player(screen, grid, all_sprites)
+    while True:
+        screen.fill((255, 255, 255))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.VIDEORESIZE:
+                player.sc_resize()
+        #grid.render()
+        #pygame.draw.rect(screen, (255, 0, 0), (screen.get_width() / 5, screen.get_height() / 5, screen.get_width() / 5 * 3, screen.get_height() / 5 * 3), 2)
+        #pygame.draw.rect(screen, (0, 255, 0), (player.rect.x, player.rect.y, player.rect.width, player.rect.height), 2)
+        #pygame.draw.circle(screen, (255, 0, 0), grid.center, 5)
+        #Отладка для игрока и сетки
+
+        #button.update()
+        player.move()
+        player.check()
+        all_sprites.draw(screen)
+        pygame.draw.circle(screen, (0, 0, 0), player.rect.center, 5)
+        clock.tick(fps)
+        pygame.display.flip()
+
+
+if __name__ == "__main__":
+    menu()
