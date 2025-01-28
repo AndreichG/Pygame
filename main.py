@@ -1,5 +1,7 @@
 import sys
 import pygame
+
+from cannons import LaserCannon
 from player import Player
 from grid import Grid
 from button import Button
@@ -34,8 +36,10 @@ def menu():
 
 def game():
     all_sprites = pygame.sprite.Group()
-    grid = Grid(screen, (128, 128), 64)
+    grid = Grid(screen, (64, 64), 128)
     player = Player(screen, grid, all_sprites)
+    LaserCannon(screen, grid, (1, 1), 0, player, all_sprites)
+
     while True:
         screen.fill((255, 255, 255))
         for event in pygame.event.get():
@@ -43,17 +47,17 @@ def game():
                 terminate()
             if event.type == pygame.VIDEORESIZE:
                 player.sc_resize()
-        #grid.render()
+        grid.render()
         #pygame.draw.rect(screen, (255, 0, 0), (screen.get_width() / 5, screen.get_height() / 5, screen.get_width() / 5 * 3, screen.get_height() / 5 * 3), 2)
         #pygame.draw.rect(screen, (0, 255, 0), (player.rect.x, player.rect.y, player.rect.width, player.rect.height), 2)
         #pygame.draw.circle(screen, (255, 0, 0), grid.center, 5)
         #Отладка для игрока и сетки
 
-        #button.update()
-        player.move()
-        player.check()
         all_sprites.draw(screen)
-        pygame.draw.circle(screen, (0, 0, 0), player.rect.center, 5)
+        all_sprites.update()
+        if not player.alive():
+            menu()
+        #pygame.draw.circle(screen, (0, 0, 0), player.rect.center, 5)
         clock.tick(fps)
         pygame.display.flip()
 
