@@ -23,27 +23,9 @@ def terminate():
 
 
 def menu():
-    button = Button(screen, (255, 0, 0), levels, 0.5, 0.5, 0.2, 0.1, text="Play")
-    screen.fill((255, 255, 255))
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                terminate()
-            if event.type == pygame.VIDEORESIZE:
-                button.sc_resize()
-                screen.fill((255, 255, 255))
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                button.check(event.pos, event.button)
-        button.render()
-        pygame.display.flip()
-        clock.tick(fps)
-
-
-def levels():
-    buttons = []
-    for i in range(5):
-        buttons.append(Button(screen, (32, 128, 255), game, 0.15 * i + 0.2, 0.1, 0.1, 0.1, text=f"{i + 1}", id=i + 1))
-
+    buttons = [Button(screen, (255, 0, 0), levels, 0.5, 0.35, 0.2, 0.1, text="Play"),
+              Button(screen, (255, 0, 0), controls, 0.5, 0.5, 0.2, 0.1, text="Controls"),
+              Button(screen, (255, 0, 0), terminate, 0.5, 0.65, 0.2, 0.1, text="Exit")]
     screen.fill((255, 255, 255))
     while True:
         for event in pygame.event.get():
@@ -60,6 +42,60 @@ def levels():
             i.render()
         pygame.display.flip()
         clock.tick(fps)
+
+
+def levels():
+    buttons = []
+    for i in range(5):
+        buttons.append(Button(screen, (32, 128, 255), game, 0.15 * i + 0.2, 0.1, 0.1, 0.1, text=f"{i + 1}", id=i + 1))
+    buttons.append(Button(screen, (255, 0, 0), menu, 0.15, 0.9, 0.2, 0.1, text="Back"))
+    screen.fill((255, 255, 255))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.VIDEORESIZE:
+                for i in buttons:
+                    i.sc_resize()
+                screen.fill((255, 255, 255))
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in buttons:
+                    i.check(event.pos, event.button)
+        for i in buttons:
+            i.render()
+        pygame.display.flip()
+        clock.tick(fps)
+
+
+def controls():
+    buttons = [Button(screen, (255, 0, 0), menu, 0.15, 0.9, 0.2, 0.1, text="Back")]
+    screen.fill((255, 255, 255))
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.VIDEORESIZE:
+                for i in buttons:
+                    i.sc_resize()
+                screen.fill((255, 255, 255))
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in buttons:
+                    i.check(event.pos, event.button)
+        for i in buttons:
+            i.render()
+        text = pygame.font.Font(None, 50).render('W - Up', True, (0, 0, 0))
+        screen.blit(text, (50, 50))
+        text = pygame.font.Font(None, 50).render('A - Left', True, (0, 0, 0))
+        screen.blit(text, (50, 100))
+        text = pygame.font.Font(None, 50).render('S - Down', True, (0, 0, 0))
+        screen.blit(text, (50, 150))
+        text = pygame.font.Font(None, 50).render('D - Right', True, (0, 0, 0))
+        screen.blit(text, (50, 200))
+        text = pygame.font.Font(None, 50).render('LMB - Shoot', True, (0, 0, 0))
+        screen.blit(text, (50, 250))
+        pygame.display.flip()
+        clock.tick(fps)
+
 
 
 def game(lvl):
