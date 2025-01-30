@@ -58,56 +58,42 @@ class Laser(pygame.sprite.Sprite):
 
 
 class CannonBall(pygame.sprite.Sprite):
-    image = load_image("cannonball.png")
+    image = load_image("ball.png")
 
     def __init__(self, screen, grid, pos, direction, player, *group):
         self.screen = screen
         self.grid = grid
         self.pos = pos
         self.direction = direction
-        self.image = pygame.transform.rotate(Laser.image, 90 * self.direction)
         self.rect = self.image.get_rect()
         self.time = time.time()
         self.player = player
         self.mask = pygame.mask.from_surface(self.image)
-        self.speed = 10
-        if self.direction == 0:
-            self.rect.midright = self.place()
-        if self.direction == 1:
-            self.rect.midtop = self.place()
-        if self.direction == 2:
-            self.rect.midleft = self.place()
-        if self.direction == 3:
-            self.rect.midbottom = self.place()
+        self.speed = 512
+        self.rect.center = self.place()
         super().__init__(*group)
 
     def update(self):
         if time.time() - self.time >= 20:
             self.kill()
-        if self.direction == 0:
-            self.rect.midright = self.place()
-        if self.direction == 1:
-            self.rect.midtop = self.place()
-        if self.direction == 2:
-            self.rect.midleft = self.place()
-        if self.direction == 3:
-            self.rect.midbottom = self.place()
+        self.rect.center = self.place()
         if pygame.sprite.collide_mask(self, self.player):
             self.player.kill()
 
     def place(self):
         if self.direction == 0:
-            x = self.grid.center[0] + self.pos[0] * self.grid.cell_size - 10 * time.time() - self.time
+            x = self.grid.center[0] + self.pos[0] * self.grid.cell_size - self.speed * (time.time() - self.time)
             y = self.grid.center[1] + self.pos[1] * self.grid.cell_size
         elif self.direction == 1:
             x = self.grid.center[0] + self.pos[0] * self.grid.cell_size
-            y = self.grid.center[1] + self.pos[1] * self.grid.cell_size + 10 * time.time() - self.time
+            y = self.grid.center[1] + self.pos[1] * self.grid.cell_size + self.speed * (time.time() - self.time)
         elif self.direction == 2:
-            x = self.grid.center[0] + self.pos[0] * self.grid.cell_size + 10 * time.time() - self.time
+            x = self.grid.center[0] + self.pos[0] * self.grid.cell_size + self.speed * (time.time() - self.time)
             y = self.grid.center[1] + self.pos[1] * self.grid.cell_size
         else:
             x = self.grid.center[0] + self.pos[0] * self.grid.cell_size
-            y = self.grid.center[1] + self.pos[1] * self.grid.cell_size - 10 * time.time() - self.time
+            y = self.grid.center[1] + self.pos[1] * self.grid.cell_size - self.speed * (time.time() - self.time)
+        print(x, y)
         return x, y
 
 
@@ -119,12 +105,6 @@ class Cannon(pygame.sprite.Sprite):
         self.direction = direction
         self.player = player
         super().__init__(*group)
-
-    def change_image(self, image, angle):
-        x, y = self.rect.centerx, self.rect.centery
-        self.image = pygame.transform.rotate(image, angle)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
 
     def place(self):
         x = self.grid.center[0] + self.pos[0] * self.grid.cell_size
@@ -161,6 +141,12 @@ class LaserCannon(Cannon):
         self.time = time.time()
         self.dir_flag = False
 
+    def change_image(self, image, angle):
+        x, y = self.rect.centerx, self.rect.centery
+        self.image = pygame.transform.rotate(image, angle)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
     def update(self):
         self.rect.left, self.rect.top = self.place()
         self.on_screen(self.rect.left + self.image.get_width() / 2, self.rect.top + self.image.get_height() / 2)
@@ -178,17 +164,32 @@ class LaserCannon(Cannon):
         Laser(self.screen, self.grid, (self.pos[0] + 0.5, self.pos[1] + 0.5), self.direction, self.player, *self.groups())
 
 
-class NormalCannon(Cannon):
-    image_off = load_image("normal_cannon_off.png")
-    image_on = load_image("normalr_cannon_on.png")
+class OldCannon(Cannon):
+    image = load_image("old_cannon.png")
 
     def __init__(self, screen, grid, pos, direction, player, *group):
         super().__init__(screen, grid, pos, direction, player, *group)
-        self.image = pygame.transform.rotate(NormalCannon.image_off, 90 * self.direction)
+        self.image = pygame.transform.rotate(OldCannon.image, 90 * self.direction)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = self.place()
         self.time = time.time()
         self.dir_flag = False
+
+    def change_image(self, image, angle):
+        x, y = self.rect.centerx, self.rect.centery
+        self.image = pygame.transform.rotate(image, angle)
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+
+    def move(self):
+        if self.direction == 0:
+            self.pos[0] -= 1
+        if self.direction == 1:
+            self.pos[1] += 1
+        if self.direction == 2:
+            self.pos[0] += 1
+        if self.direction == 3:
+            self.pos[1] -= 1
 
     def update(self):
         self.rect.left, self.rect.top = self.place()
@@ -199,10 +200,10 @@ class NormalCannon(Cannon):
             self.dir_flag = False
         if 2 <= time.time() - self.time and not self.dir_flag:
             self.direction = random.choice([0, 1, 2, 3])
-            self.change_image(NormalCannon.image_off, self.direction * 90)
+            self.change_image(OldCannon.image, self.direction * 90)
             self.dir_flag = True
 
     def shoot(self):
-        self.change_image(NormalCannon.image_on, self.direction * 90)
+        self.change_image(OldCannon.image, self.direction * 90)
         CannonBall(self.screen, self.grid, (self.pos[0] + 0.5, self.pos[1] + 0.5), self.direction, self.player,
                 *self.groups())
