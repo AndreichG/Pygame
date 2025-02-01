@@ -1,7 +1,7 @@
 import pygame
 
 
-class Grid():
+class Grid:
     def __init__(self, screen, size, cell_size):
         self.screen = screen
         self.screen_size = (screen.get_width(), screen.get_height())

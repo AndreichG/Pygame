@@ -4,7 +4,7 @@ import time
 import pygame
 import sqlite3
 
-from cannons import LaserCannon
+from cannons import LaserCannon, OldCannon
 from player import Player
 from grid import Grid
 from button import Button
@@ -47,7 +47,7 @@ def menu():
 def levels():
     buttons = []
     for i in range(5):
-        buttons.append(Button(screen, (32, 128, 255), game, 0.15 * i + 0.2, 0.1, 0.1, 0.1, text=f"{i + 1}", id=i + 1))
+        buttons.append(Button(screen, (32, 128, 255), game, 0.15 * i + 0.2, 0.1, 0.1, 0.1, text=f"{i + 1}", arg=i + 1))
     buttons.append(Button(screen, (255, 0, 0), menu, 0.15, 0.9, 0.2, 0.1, text="Back"))
     screen.fill((255, 255, 255))
     while True:
@@ -97,11 +97,10 @@ def controls():
         clock.tick(fps)
 
 
-
 def game(lvl):
     all_sprites = pygame.sprite.Group()
     grid = Grid(screen, (64, 64), 128)
-    player = Player(screen, grid, all_sprites)
+    player = Player(screen, grid, fps, all_sprites)
 
     con = sqlite3.connect("db\levels.db")
     cur = con.cursor()
@@ -110,7 +109,10 @@ def game(lvl):
     for elem in result:
         if elem[1] == "laser":
             LaserCannon(screen, grid, (elem[2], elem[3]), elem[4], player, all_sprites)
+        if elem[1] == "old":
+            OldCannon(screen, grid, [elem[2], elem[3]], elem[4], player, all_sprites)
     con.close()
+
 
     while True:
         screen.fill((255, 255, 255))
@@ -122,12 +124,12 @@ def game(lvl):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     levels()
-        grid.render()
         #pygame.draw.rect(screen, (255, 0, 0), (screen.get_width() / 5, screen.get_height() / 5, screen.get_width() / 5 * 3, screen.get_height() / 5 * 3), 2)
         #pygame.draw.rect(screen, (0, 255, 0), (player.rect.x, player.rect.y, player.rect.width, player.rect.height), 2)
         #pygame.draw.circle(screen, (255, 0, 0), grid.center, 5)
         #Отладка для игрока и сетки
 
+        grid.render()
         all_sprites.draw(screen)
         all_sprites.update()
         if not player.alive():

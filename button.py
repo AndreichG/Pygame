@@ -2,13 +2,13 @@ import pygame
 
 
 class Button:
-    def __init__(self, screen, color, func, x, y, w, h, text='', font=None, id=None):
+    def __init__(self, screen, color, func, x, y, w, h, text='', font=None, arg=None):
         self.screen = screen
         self.screen_size = (screen.get_width(), screen.get_height())
         self.color = color
         self.center = [x * self.screen_size[0], y * self.screen_size[1]]
         self.dimensions = [w * self.screen_size[0], h * self.screen_size[1]]
-        self.id = id
+        self.arg = arg
         self.func = func
         self.text = text
         self.font = pygame.font.Font(font, 50)
@@ -28,21 +28,19 @@ class Button:
         self.screen.blit(text, (text_x, text_y))
 
     def check(self, pos, key):
-        print(pos, key)
         if (key == 1 and
                 self.center[0] - self.dimensions[0] / 2 < pos[0] < self.center[0] + self.dimensions[0] / 2 and
                 self.center[1] - self.dimensions[1] / 2 < pos[1] < self.center[1] + self.dimensions[1] / 2):
-            if self.id is None:
+            if self.arg is None:
                 self.func()
             else:
-                self.func(self.id)
+                self.func(self.arg)
 
     def sc_resize(self):
         x = self.center[0] / self.screen_size[0]
         y = self.center[1] / self.screen_size[1]
         w = self.dimensions[0] / self.screen_size[0]
         h = self.dimensions[1] / self.screen_size[1]
-        print(x, y, w, h)
         self.center[0] = self.screen.get_width() * x
         self.center[1] = self.screen.get_height() * y
         self.dimensions[0] = self.screen.get_width() * w
