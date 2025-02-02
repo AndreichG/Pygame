@@ -1,10 +1,11 @@
 import sys
-import time
 
 import pygame
 import sqlite3
 
-from cannons import LaserCannon, OldCannon
+from lasercannon import LaserCannon
+from mortar import Mortar
+from oldcannon import OldCannon
 from player import Player
 from grid import Grid
 from button import Button
@@ -97,6 +98,28 @@ def controls():
         clock.tick(fps)
 
 
+def game_over(lvl):
+    buttons = [Button(screen, (255, 0, 0), game, 0.5, 0.35, 0.2, 0.1, text="Retry", arg=lvl),
+               Button(screen, (255, 0, 0), levels, 0.5, 0.5, 0.2, 0.1, text="Back")]
+    while True:
+        screen.fill((255, 255, 255))
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+            if event.type == pygame.VIDEORESIZE:
+                for i in buttons:
+                    i.sc_resize()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                for i in buttons:
+                    i.check(event.pos, event.button)
+        for i in buttons:
+            i.render()
+        text = pygame.font.Font(None, 50).render('You died!', True, (0, 0, 0))
+        screen.blit(text, (0.5 * screen.get_width() - text.get_width() / 2, 100))
+        pygame.display.flip()
+        clock.tick(fps)
+
+
 def game(lvl):
     all_sprites = pygame.sprite.Group()
     grid = Grid(screen, (64, 64), 128)
@@ -108,9 +131,11 @@ def game(lvl):
 
     for elem in result:
         if elem[1] == "laser":
-            LaserCannon(screen, grid, (elem[2], elem[3]), elem[4], player, all_sprites)
+            LaserCannon(screen, grid, [elem[2], elem[3]], elem[4], elem[5], player, all_sprites)
         if elem[1] == "old":
-            OldCannon(screen, grid, [elem[2], elem[3]], elem[4], player, all_sprites)
+            OldCannon(screen, grid, [elem[2], elem[3]], elem[4], elem[5], player, all_sprites)
+        if elem[1] == "mortar":
+            Mortar(screen, grid, [elem[2], elem[3]], elem[4], elem[5], player, all_sprites)
     con.close()
 
     while True:
@@ -130,10 +155,9 @@ def game(lvl):
 
         grid.render()
         all_sprites.draw(screen)
-        all_sprites.update()
+        all_sprites.update(fps)
         if not player.alive():
-            time.sleep(1)
-            menu()
+            game_over(lvl)
         #pygame.draw.circle(screen, (0, 0, 0), player.rect.center, 5)
         clock.tick(fps)
         pygame.display.flip()
