@@ -1,13 +1,13 @@
 import pygame
+cannons = pygame.sprite.Group()
 
 
 class Cannon(pygame.sprite.Sprite):
-    def __init__(self, screen, grid, pos, direction, can_rotate, player, *group):
+    def __init__(self, screen, grid, pos, direction, can_rotate, *group):
         self.screen = screen
         self.grid = grid
         self.pos = pos
         self.direction = direction
-        self.player = player
         super().__init__(*group)
         self.can_rotate = can_rotate
 

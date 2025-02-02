@@ -5,7 +5,6 @@ import time
 import random
 from cannon import Cannon
 
-
 def load_image(name):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
@@ -15,13 +14,13 @@ def load_image(name):
     return image
 
 
-class LaserCannon(Cannon):
+class PermaLaserCannon(Cannon):
     image_off = load_image("laser_cannon_off.png")
-    image_on = load_image("laser_cannon_on.png")
+    image_on = load_image("perma_laser_cannon_on.png")
 
     def __init__(self, screen, grid, pos, direction, can_rotate, *group):
         super().__init__(screen, grid, pos, direction, can_rotate, *group)
-        self.image = pygame.transform.rotate(LaserCannon.image_off, 90 * self.direction)
+        self.image = pygame.transform.rotate(PermaLaserCannon.image_off, 90 * self.direction)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = self.place()
         self.time = time.time()
@@ -42,5 +41,5 @@ class LaserCannon(Cannon):
         if 2 <= time.time() - self.time and not self.dir_flag:
             if self.can_rotate:
                 self.direction = random.choice([0, 1, 2, 3])
-            self.change_image(LaserCannon.image_off, self.direction * 90)
+            self.change_image(PermaLaserCannon.image_off, self.direction * 90)
             self.dir_flag = True

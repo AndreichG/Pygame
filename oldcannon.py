@@ -4,7 +4,6 @@ import sys
 import time
 import random
 from cannon import Cannon
-from projectiles import CannonBall
 
 
 def load_image(name):
@@ -19,8 +18,8 @@ def load_image(name):
 class OldCannon(Cannon):
     image = load_image("old_cannon.png")
 
-    def __init__(self, screen, grid, pos, direction, can_rotate, player, *group):
-        super().__init__(screen, grid, pos, direction, can_rotate, player, *group)
+    def __init__(self, screen, grid, pos, direction, can_rotate, *group):
+        super().__init__(screen, grid, pos, direction, can_rotate, *group)
         self.image = pygame.transform.rotate(OldCannon.image, 90 * self.direction)
         self.rect = self.image.get_rect()
         self.rect.left, self.rect.top = self.place()
@@ -47,15 +46,10 @@ class OldCannon(Cannon):
         self.rect.left, self.rect.top = self.place()
         self.on_screen(self.rect.left + self.image.get_width() / 2, self.rect.top + self.image.get_height() / 2)
         if time.time() - self.time >= 4:
-            self.shoot()
             self.time = time.time()
             self.dir_flag = False
-        if 2 <= time.time() - self.time and self.can_rotate and not self.dir_flag:
-            self.direction = random.choice([0, 1, 2, 3])
+        if 2 <= time.time() - self.time and not self.dir_flag:
+            if self.can_rotate:
+                self.direction = random.choice([0, 1, 2, 3])
             self.change_image(OldCannon.image, self.direction * 90)
             self.dir_flag = True
-
-    def shoot(self):
-        self.change_image(OldCannon.image, self.direction * 90)
-        CannonBall(self.screen, self.grid, [self.pos[0] + 0.5, self.pos[1] + 0.5], self.direction, self.player,
-                *self.groups())
