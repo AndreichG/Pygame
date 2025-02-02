@@ -2,6 +2,7 @@ import os
 import sys
 from math import sin,cos, pi
 import pygame
+from pygame.examples.cursors import image
 
 
 def load_image(name):
@@ -13,6 +14,16 @@ def load_image(name):
     return image
 
 
+class Grenade(pygame.sprite.Sprite):
+    image = load_image("grenade.png")
+
+    def __init__(self, pos, *group):
+        super().__init__(*group)
+        self.image = Grenade.image
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
+
+
 class Player(pygame.sprite.Sprite):
     image = load_image("player1.png")
 
@@ -22,16 +33,16 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.p0 = self.rect.center
-        self.v = 256 / fps
 
+        self.v = 256
         self.screen = screen
         self.grid = grid
         self.screen_size = (screen.get_width(), screen.get_height())
         self.pos = (0, 0)
         self.rect.topleft = self.place()
 
-    def update(self):
-        self.move()
+    def update(self, fps):
+        self.move(fps)
         self.check()
 
     def place(self):
@@ -46,49 +57,41 @@ class Player(pygame.sprite.Sprite):
         self.rect.center = (x, y)
         self.mask = pygame.mask.from_surface(self.image)
 
-    def move(self):
+    def move(self, fps):
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
             if keys[pygame.K_a]:
                 self.change_image(Player.image, 45)
-                self.rect.x += -self.v * cos(pi / 4)
-                self.rect.y += -self.v * sin(pi / 4)
-                print(1)
+                self.rect.x += -self.v * cos(pi / 4) / fps
+                self.rect.y += -self.v * sin(pi / 4) / fps
             elif keys[pygame.K_d]:
                 self.change_image(Player.image, -45)
-                self.rect.x += self.v * cos(pi / 4)
-                self.rect.y += -self.v * sin(pi / 4)
-                print(2)
+                self.rect.x += self.v * cos(pi / 4) / fps
+                self.rect.y += -self.v * sin(pi / 4) / fps
             else:
                 self.change_image(Player.image, 0)
-                self.rect.y += -self.v
-                print(3)
+                self.rect.y += -self.v / fps
 
         elif keys[pygame.K_s]:
             if keys[pygame.K_a]:
                 self.change_image(Player.image, 135)
-                self.rect.x += -self.v * cos(pi / 4)
-                self.rect.y += self.v * sin(pi / 4)
-                print(4)
+                self.rect.x += -self.v * cos(pi / 4) / fps
+                self.rect.y += self.v * sin(pi / 4) / fps
             elif keys[pygame.K_d]:
                 self.change_image(Player.image, -135)
-                self.rect.x += self.v * cos(pi / 4)
-                self.rect.y += self.v * sin(pi / 4)
-                print(5)
+                self.rect.x += self.v * cos(pi / 4) / fps
+                self.rect.y += self.v * sin(pi / 4) / fps
             else:
                 self.change_image(Player.image, 180)
-                self.rect.y += self.v
-                print(6)
+                self.rect.y += self.v / fps
 
         elif keys[pygame.K_a] and not (keys[pygame.K_w] and keys[pygame.K_s]):
             self.change_image(Player.image, 90)
-            self.rect.x += -self.v
-            print(7)
+            self.rect.x += -self.v / fps
 
         elif keys[pygame.K_d] and not (keys[pygame.K_w] and keys[pygame.K_s]):
             self.change_image(Player.image, -90)
-            self.rect.x += self.v
-            print(7)
+            self.rect.x += self.v / fps
 
 
         self.pos = (self.rect.centerx - self.grid.center[0], self.rect.centery - self.grid.center[1])
@@ -117,3 +120,4 @@ class Player(pygame.sprite.Sprite):
         self.screen_size = (self.screen.get_width(), self.screen.get_height())
         self.grid.center[0] = self.rect.centerx - self.pos[0]
         self.grid.center[1] = self.rect.centery - self.pos[1]
+
