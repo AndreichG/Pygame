@@ -44,4 +44,4 @@ class PermaLaserCannon(Cannon):
 
     def shoot(self):
         self.change_image(PermaLaserCannon.image_on, self.direction * 90)
-        Laser(self.screen, self.grid, [self.pos[0] + 0.5, self.pos[1] + 0.5], self.direction, self.player, *self.groups())
+        PermaLaser(self.screen, self.grid, [self.pos[0] + 0.5, self.pos[1] + 0.5], self.direction, self.player, *self.groups())
