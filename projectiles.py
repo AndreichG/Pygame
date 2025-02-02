@@ -161,3 +161,44 @@ class Explosion(pygame.sprite.Sprite):
         y = self.grid.center[1] + self.pos[1] * self.grid.cell_size
         return x, y
 
+
+class PermaLaser(pygame.sprite.Sprite):
+    image = load_image("perma_laser.png")
+
+    def __init__(self, screen, grid, pos, direction, player, *group):
+        self.screen = screen
+        self.grid = grid
+        self.pos = pos
+        self.direction = direction
+        self.image = pygame.transform.rotate(PermaLaser.image, 90 * self.direction)
+        self.rect = self.image.get_rect()
+        self.time = time.time()
+        self.player = player
+        self.mask = pygame.mask.from_surface(self.image)
+        if self.direction == 0:
+            self.rect.midright = self.place()
+        if self.direction == 1:
+            self.rect.midtop = self.place()
+        if self.direction == 2:
+            self.rect.midleft = self.place()
+        if self.direction == 3:
+            self.rect.midbottom = self.place()
+        super().__init__(*group)
+
+    def update(self, fps):
+        if self.direction == 0:
+            self.rect.midright = self.place()
+        if self.direction == 1:
+            self.rect.midtop = self.place()
+        if self.direction == 2:
+            self.rect.midleft = self.place()
+        if self.direction == 3:
+            self.rect.midbottom = self.place()
+        if pygame.sprite.collide_mask(self, self.player):
+            self.player.kill()
+
+    def place(self):
+        x = self.grid.center[0] + self.pos[0] * self.grid.cell_size
+        y = self.grid.center[1] + self.pos[1] * self.grid.cell_size
+        return x, y
+
