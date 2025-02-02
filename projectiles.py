@@ -217,8 +217,6 @@ class Grenade(pygame.sprite.Sprite):
         self.rect.center = self.place()
 
     def place(self):
-        print(self.pos)
-        print(self.grid.center[0])
         x = self.grid.center[0] + self.pos[0] * self.grid.cell_size
         y = self.grid.center[1] + self.pos[1] * self.grid.cell_size
         return x, y
