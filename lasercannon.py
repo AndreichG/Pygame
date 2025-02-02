@@ -41,8 +41,9 @@ class LaserCannon(Cannon):
             self.shoot()
             self.time = time.time()
             self.dir_flag = False
-        if 2 <= time.time() - self.time and self.can_rotate and not self.dir_flag:
-            self.direction = random.choice([0, 1, 2, 3])
+        if 2 <= time.time() - self.time and not self.dir_flag:
+            if self.can_rotate:
+                self.direction = random.choice([0, 1, 2, 3])
             self.change_image(LaserCannon.image_off, self.direction * 90)
             self.dir_flag = True
 
