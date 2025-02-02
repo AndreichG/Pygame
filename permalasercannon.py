@@ -4,7 +4,7 @@ import sys
 import time
 import random
 from cannon import Cannon
-from projectiles import Laser
+from projectiles import PermaLaser
 
 
 def load_image(name):
