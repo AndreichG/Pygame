@@ -1,5 +1,4 @@
 import pygame
-cannons = pygame.sprite.Group()
 
 
 class Cannon(pygame.sprite.Sprite):

@@ -5,6 +5,7 @@ import time
 import random
 from cannon import Cannon
 
+
 def load_image(name):
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):

@@ -180,7 +180,6 @@ def win(lvl):
         clock.tick(fps)
 
 
-
 def game(lvl):
     all_sprites = pygame.sprite.Group()
     cannons = pygame.sprite.Group()
