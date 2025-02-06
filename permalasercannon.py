@@ -37,6 +37,7 @@ class PermaLaserCannon(Cannon):
         self.rect.left, self.rect.top = self.place()
         self.on_screen(self.rect.left + self.image.get_width() / 2, self.rect.top + self.image.get_height() / 2)
         if time.time() - self.time >= 4:
+            self.change_image(PermaLaserCannon.image_on, self.direction * 90)
             self.time = time.time()
             self.dir_flag = False
         if 2 <= time.time() - self.time and not self.dir_flag:

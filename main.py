@@ -10,7 +10,7 @@ from oldcannon import OldCannon
 from permalasercannon import PermaLaserCannon
 from player import Player
 from grid import Grid
-from button import Button
+from button import Button, ImageButton
 from projectiles import Laser, CannonBall, MortarShot, Grenade, PermaLaser
 
 
@@ -27,11 +27,12 @@ def terminate():
 
 
 def menu():
-    buttons = [Button(screen, (255, 0, 0), levels, 0.5, 0.35, 0.2, 0.1, text="Play"),
-               Button(screen, (255, 0, 0), controls, 0.5, 0.65, 0.2, 0.1, text="Controls"),
-               Button(screen, (255, 0, 0), terminate, 0.5, 0.8, 0.2, 0.1, text="Exit"),
-               Button(screen, (255, 0, 0), stats, 0.5, 0.5, 0.2, 0.1, text="Stats for nerds")]
+    buttons = [ImageButton(screen, levels, 0.5, 0.35, "buttons\playbutton.png"),
+               ImageButton(screen, stats, 0.5, 0.5, "buttons\stats.png"),
+               ImageButton(screen, terminate, 0.5, 0.8, "buttons\exit.png"),
+               ImageButton(screen, controls, 0.5, 0.65, "buttons\controls.png")]
     screen.fill((255, 255, 255))
+    render_background()
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -40,6 +41,7 @@ def menu():
                 for i in buttons:
                     i.sc_resize()
                 screen.fill((255, 255, 255))
+                render_background()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 for i in buttons:
                     i.check(event.pos, event.button)
@@ -49,11 +51,17 @@ def menu():
         clock.tick(fps)
 
 
+def render_background():
+    image = pygame.image.load("data/player1.png")
+    for i in range(3):
+        for j in range(4):
+            screen.blit(pygame.transform.rotate(image, 45 + 90 * j), (j * screen.get_width() / 4 + screen.get_width() / 16, i * screen.get_height() / 3 + screen.get_height() / 12))
+
 def levels():
     buttons = []
     for i in range(5):
-        buttons.append(Button(screen, (32, 128, 255), game, 0.15 * i + 0.2, 0.1, 0.1, 0.1, text=f"{i + 1}", arg=i + 1))
-    buttons.append(Button(screen, (255, 0, 0), menu, 0.15, 0.9, 0.2, 0.1, text="Back"))
+        buttons.append(Button(screen, game, 0.15 * i + 0.2, 0.45, 0.1, 0.1, text=f"{i + 1}", arg=i + 1))
+    buttons.append(Button(screen, menu, 0.15, 0.9, 0.2, 0.1, text="Back"))
     screen.fill((255, 255, 255))
     while True:
         for event in pygame.event.get():
@@ -68,12 +76,16 @@ def levels():
                     i.check(event.pos, event.button)
         for i in buttons:
             i.render()
+        text = pygame.font.Font(None, 50).render('Choose a level', True, (0, 0, 0))
+        text_x = screen.get_width() / 2 - text.get_width() // 2
+        text_y = screen.get_height() / 4 - text.get_height() // 2
+        screen.blit(text, (text_x, text_y))
         pygame.display.flip()
         clock.tick(fps)
 
 
 def stats():
-    buttons = [Button(screen, (255, 0, 0), menu, 0.15, 0.9, 0.2, 0.1, text="Back")]
+    buttons = [Button(screen, menu, 0.15, 0.9, 0.2, 0.1, text="Back", color=(255, 0, 0))]
     screen.fill((255, 255, 255))
     file = open("db/stats.txt", "r")
     kills = list(map(int, file.readlines()))
@@ -107,7 +119,7 @@ def stats():
 
 
 def controls():
-    buttons = [Button(screen, (255, 0, 0), menu, 0.15, 0.9, 0.2, 0.1, text="Back")]
+    buttons = [Button(screen, menu, 0.15, 0.9, 0.2, 0.1, text="Back", color=(255, 0, 0))]
     screen.fill((255, 255, 255))
     while True:
         for event in pygame.event.get():
@@ -137,8 +149,8 @@ def controls():
 
 
 def game_over(lvl):
-    buttons = [Button(screen, (255, 0, 0), game, 0.5, 0.35, 0.2, 0.1, text="Retry", arg=lvl),
-               Button(screen, (255, 0, 0), levels, 0.5, 0.5, 0.2, 0.1, text="Back")]
+    buttons = [Button(screen, game, 0.5, 0.35, 0.2, 0.1, text="Retry", arg=lvl, color=(255, 0, 0)),
+               Button(screen, levels, 0.5, 0.5, 0.2, 0.1, text="Back", color=(255, 0, 0))]
     while True:
         screen.fill((255, 255, 255))
         for event in pygame.event.get():
@@ -159,8 +171,8 @@ def game_over(lvl):
 
 
 def win(lvl):
-    buttons = [Button(screen, (255, 0, 0), game, 0.5, 0.35, 0.2, 0.1, text="Play again", arg=lvl),
-               Button(screen, (255, 0, 0), levels, 0.5, 0.5, 0.2, 0.1, text="Back")]
+    buttons = [Button(screen, game, 0.5, 0.35, 0.2, 0.1, text="Play again", arg=lvl, color=(255, 0, 0)),
+               Button(screen, levels, 0.5, 0.5, 0.2, 0.1, text="Back", color=(255, 0, 0))]
     while True:
         screen.fill((255, 255, 255))
         for event in pygame.event.get():
